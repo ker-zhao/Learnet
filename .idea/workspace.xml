@@ -30,7 +30,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../PoemNet" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1V3B2s5NIvTVvGdCp7CNuHDd21t" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -203,6 +203,7 @@
       <workItem from="1579489308289" duration="4178000" />
       <workItem from="1579511775646" duration="7782000" />
       <workItem from="1579676839284" duration="4506000" />
+      <workItem from="1579681681503" duration="21000" />
     </task>
     <servers />
   </component>
