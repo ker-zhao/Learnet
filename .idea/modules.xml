@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Learnet.iml" filepath="$PROJECT_DIR$/.idea/Learnet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../PoemNet/.idea/PoemNet.iml" filepath="$PROJECT_DIR$/../PoemNet/.idea/PoemNet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Thunder/.idea/Thunder.iml" filepath="$PROJECT_DIR$/../Thunder/.idea/Thunder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../demo_1/.idea/demo_1.iml" filepath="$PROJECT_DIR$/../demo_1/.idea/demo_1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../python3/.idea/python3.iml" filepath="$PROJECT_DIR$/../../python3/.idea/python3.iml" />
+    </modules>
+  </component>
+</project>
