@@ -1,19 +1,27 @@
-import learnet as ln
+from learnet import type as ty
 import numpy as np
 
 
 def softmax(logits):
-    exp_logits = ln.exp(logits)
-    return ln.div(exp_logits, ln.broadcast(ln.reduce_sum(ln.exp(logits), 1), exp_logits))
+    exp_logits = ty.exp(logits)
+    return ty.div(exp_logits, ty.broadcast(ty.reduce_sum(ty.exp(logits), 1), exp_logits))
 
 
 def cross_entropy(y_hat, y):
-    x = ln.log(y_hat)
-    x = ln.multiply(x, y)
-    costs = ln.reduce_sum(x, axis=1)
-    x = ln.sub(ln.broadcast(ln.constant(0), costs), costs)
-    x = ln.mean(x)
+    x = ty.log(y_hat)
+    x = ty.multiply(x, y)
+    costs = ty.reduce_sum(x, axis=1)
+    x = ty.sub(ty.broadcast(ty.constant(0), costs), costs)
+    x = ty.mean(x)
     return x
+
+
+def relu(x):
+    return ty.relu(x)
+
+
+def sigmoid(x):
+    return ty.sigmoid(x)
 
 
 def one_hot(y, n):

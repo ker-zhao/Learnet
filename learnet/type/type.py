@@ -31,8 +31,8 @@ class Node(object):
         else:
             return
 
-    def gradients(self, nodes):
-        self.eval()
+    def gradients(self, nodes, feed_dict=None):
+        self.eval(feed_dict=feed_dict)
         grads_map = {self: 1.}
         self.diff(1., grads_map)
         return [grads_map[i] for i in nodes]

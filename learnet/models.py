@@ -16,6 +16,9 @@ class Model(object):
         for i in range(epochs):
             self.minimizer.eval(feed_dict={self.input: x, self.y_placeholder: y})
 
+    def grad_check(self, x, y):
+        self.optimizer.gradient_check(feed_dict={self.input: x, self.y_placeholder: y})
+
 
 class Sequential(Model):
     def __init__(self, layers):

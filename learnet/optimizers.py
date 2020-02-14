@@ -11,9 +11,9 @@ class Optimizer(object):
         self.cost = cost
         return ty.optimizer(self)
 
-    def gradient_check(self, epsilon=1e-7):
+    def gradient_check(self, feed_dict, epsilon=1e-7):
         nodes = self.cost.get_variable_nodes()
-        grads = self.cost.gradients(nodes)
+        grads = self.cost.gradients(nodes, feed_dict=feed_dict)
         grads_approx = []
         error_counter = 0
         for ni, node in enumerate(nodes):
@@ -22,9 +22,9 @@ class Optimizer(object):
                 for ii in range(node.value.shape[1]):
                     value_save = np.copy(node.value)
                     node.value[i, ii] = node.value[i, ii] + epsilon
-                    cost_plus = self.cost.eval()
+                    cost_plus = self.cost.eval(feed_dict=feed_dict)
                     node.value[i, ii] = node.value[i, ii] - epsilon * 2
-                    cost_minus = self.cost.eval()
+                    cost_minus = self.cost.eval(feed_dict=feed_dict)
                     grad_approx = (cost_plus - cost_minus) / (epsilon * 2)
                     grads_approx[ni][i, ii] = grad_approx
                     grad = grads[ni][i, ii]

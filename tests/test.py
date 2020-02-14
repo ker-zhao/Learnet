@@ -68,12 +68,12 @@ def test_squared_error():
 
 def test_softmax():
     epsilon = 1e-7
-    logits = ln.variable(np.array([[1., 3.], [8., 8.]]))
-    y = ln.constant(np.array([[0., 0.], [1., 1.]]))
+    logits = ln.variable(np.array([[1., 8.], [3., 8.]]))
+    y = ln.constant(np.array([[0., 1.], [0., 1.]]))
     predict = ln.nn.softmax(logits)
     cost = ln.nn.cross_entropy(predict, y)
-    logits_pos = ln.constant(np.array([[1, 3], [4, 8 + epsilon]]))
-    logits_neg = ln.constant(np.array([[1, 3], [4, 8 - epsilon]]))
+    logits_pos = ln.constant(np.array([[1, 4], [3, 8 + epsilon]]))
+    logits_neg = ln.constant(np.array([[1, 4], [3, 8 - epsilon]]))
     softmax_pos = ln.nn.softmax(logits_pos)
     softmax_neg = ln.nn.softmax(logits_neg)
     result_pos = ln.nn.cross_entropy(softmax_pos, y)
@@ -88,7 +88,7 @@ def test_softmax():
         logging.error("test_softmax error, v should be {}, got v={}".format(expect, result))
     opt = ln.optimizers.GradientDescent(0.01)
     opt.minimize(cost)
-    opt.gradient_check()
+    opt.gradient_check({})
 
 
 def test_relu():
@@ -134,22 +134,18 @@ def test_model():
     m = 64
     x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
-    # x_train, y_train = x_train.T, y_train.T
     print("run_model, data's shape: ", x_train.shape, y_train.shape)
 
-
     model = ln.models.Sequential([
-        ln.layers.Dense(10, input_dims=x_train.shape[1], activation=ln.relu),
+        ln.layers.Dense(10, input_dims=x_train.shape[1], activation=ln.nn.relu),
         ln.layers.Dense(10, activation=ln.nn.softmax)
     ])
-
     model.compile(optimizer=ln.optimizers.GradientDescent(0.01), loss=ln.nn.cross_entropy)
-
+    model.grad_check(x_train, y_train)
     for i in range(10001):
         model.fit(x_train, y_train, epochs=1)
         if (i % 100) == 0:
             print("loss: {}, accuracy: {}.".format(model.cost.eval(), accuracy(model.graph.eval(), y_train)))
-
 
 
 def run_model():
@@ -158,7 +154,6 @@ def run_model():
     m = 64
     x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
-    # x_train, y_train = x_train.T, y_train.T
     print("run_model, data's shape: ", x_train.shape, y_train.shape)
 
     y = ln.placeholder("y")
@@ -188,9 +183,7 @@ def run_model():
     cost = ln.nn.cross_entropy(y_hat, y)
     opt = ln.optimizers.GradientDescent(0.01)
     optimizer = opt.minimize(cost)
-    # x.value = x_train
-    # y.value = y_train
-    # opt.gradient_check()
+    opt.gradient_check({x: x_train, y: y_train})
     for i in range(20001):
         optimizer.eval(feed_dict={x: x_train, y: y_train})
         if (i % 100) == 0:
