@@ -13,6 +13,7 @@ def run_tests():
     test_relu()
     test_sigmoid()
     test_optimizer()
+    test_model()
 
 
 def test_add():
@@ -122,33 +123,56 @@ def test_optimizer():
 
 
 def accuracy(y_hat, y):
-    y_hat = np.argmax(y_hat, axis=0)
-    y = np.argmax(y, axis=0)
+    y_hat = np.argmax(y_hat, axis=1)
+    y = np.argmax(y, axis=1)
     correct = np.sum(np.equal(y_hat, y))
     return correct / y.shape[0] * 100.00
+
+
+def test_model():
+    (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
+    m = 64
+    x_train, y_train = x_train[:m, :], y_train[:m]
+    y_train = ln.nn.one_hot(y_train, 10)
+    # x_train, y_train = x_train.T, y_train.T
+    print("run_model, data's shape: ", x_train.shape, y_train.shape)
+
+
+    model = ln.models.Sequential([
+        ln.layers.Dense(10, input_dims=x_train.shape[1], activation=ln.relu),
+        ln.layers.Dense(10, activation=ln.nn.softmax)
+    ])
+
+    model.compile(optimizer=ln.optimizers.GradientDescent(0.01), loss=ln.nn.cross_entropy)
+
+    for i in range(10001):
+        model.fit(x_train, y_train, epochs=1)
+        if (i % 100) == 0:
+            print("loss: {}, accuracy: {}.".format(model.cost.eval(), accuracy(model.graph.eval(), y_train)))
+
 
 
 def run_model():
     # np.seterr(all='raise')
     (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
-    x_train, y_train = x_train[:256, :], y_train[:256]
+    m = 64
+    x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
-    x_train, y_train = x_train.T, y_train.T
-    x_train = x_train
+    # x_train, y_train = x_train.T, y_train.T
     print("run_model, data's shape: ", x_train.shape, y_train.shape)
 
     y = ln.placeholder("y")
     x = ln.placeholder("x")
 
-    w1 = ln.get_variable(shape=(10, x_train.shape[0]), initializer=ln.initializers.normal, name="w1")
-    b1 = ln.get_variable(shape=(10, 1), initializer=ln.initializers.zeros, name="b1")
-    _z1 = ln.matmul(w1, x)
+    w1 = ln.get_variable(shape=(x_train.shape[1], 10), initializer=ln.initializers.normal, name="w1")
+    b1 = ln.get_variable(shape=(1, 10), initializer=ln.initializers.zeros, name="b1")
+    _z1 = ln.matmul(x, w1)
     z1 = ln.add(_z1, ln.broadcast(b1, _z1))
     a1 = ln.relu(z1)
 
     w2 = ln.get_variable(shape=(10, 10), initializer=ln.initializers.normal, name="w2")
-    b2 = ln.get_variable(shape=(10, 1), initializer=ln.initializers.zeros, name="b2")
-    _z2 = ln.matmul(w2, a1)
+    b2 = ln.get_variable(shape=(1, 10), initializer=ln.initializers.zeros, name="b2")
+    _z2 = ln.matmul(a1, w2)
     z2 = ln.add(_z2, ln.broadcast(b2, _z2))
     y_hat = ln.nn.softmax(z2)
 
@@ -164,19 +188,18 @@ def run_model():
     cost = ln.nn.cross_entropy(y_hat, y)
     opt = ln.optimizers.GradientDescent(0.01)
     optimizer = opt.minimize(cost)
-    x.value = x_train
-    y.value = y_train
-    opt.gradient_check()
+    # x.value = x_train
+    # y.value = y_train
+    # opt.gradient_check()
     for i in range(20001):
         optimizer.eval(feed_dict={x: x_train, y: y_train})
-        # print(cost.eval())a
         if (i % 100) == 0:
             print("loss: {}, accuracy: {}.".format(cost.eval(), accuracy(y_hat.eval(), y_train)))
 
 
 def main():
     run_tests()
-    run_model()
+    # run_model()
 
 
 if __name__ == "__main__":
