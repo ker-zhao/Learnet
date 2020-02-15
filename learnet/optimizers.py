@@ -43,3 +43,35 @@ class GradientDescent(Optimizer):
         grads = self.cost.gradients(nodes)
         for i, node in enumerate(nodes):
             node.value -= grads[i] * self.learning_rate
+
+
+class Adam(Optimizer):
+    def __init__(self, learning_rate=0.001):
+        super().__init__(learning_rate)
+        self.v = []
+        self.s = []
+        self.v_correct = []
+        self.s_correct = []
+        self.t = 0
+
+    def minimize(self, cost):
+        self.cost = cost
+        nodes = self.cost.get_variable_nodes()
+        for node in nodes:
+            self.v.append(np.zeros_like(node.value))
+            self.s.append(np.zeros_like(node.value))
+            self.v_correct.append(np.zeros_like(node.value))
+            self.s_correct.append(np.zeros_like(node.value))
+        return ty.optimizer(self)
+
+    def step(self, beta1=0.9, beta2=0.999, epsilon=1e-8):
+        nodes = self.cost.get_variable_nodes()
+        grads = self.cost.gradients(nodes)
+        self.t += 1
+        for i, node in enumerate(nodes):
+            self.v[i] = beta1 * self.v[i] + (1 - beta1) * grads[i]
+            self.s[i] = beta2 * self.s[i] + (1 - beta2) * (grads[i] ** 2)
+            self.v_correct[i] = self.v[i] / (1 - (beta1 ** self.t))
+            self.s_correct[i] = self.s[i] / (1 - (beta2 ** self.t))
+            g = self.v_correct[i] / (self.s_correct[i] ** 0.5 + epsilon)
+            node.value -= g * self.learning_rate

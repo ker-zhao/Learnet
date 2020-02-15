@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from learnet import type as ty
 
 
@@ -19,7 +20,11 @@ class Model(object):
         self.input = ty.placeholder()
         self.y_placeholder = ty.placeholder()
 
-    def fit(self, x, y, batch_size=32, epochs=1, shuffle=True):
+    def fit(self, x, y, batch_size=32, epochs=1, shuffle=True, verbose=2):
+        if shuffle:
+            indexes = [i for i in range(x.shape[0])]
+            random.shuffle(indexes)
+            x, y = x[indexes, ...], y[indexes, ...]
         n_batches = int(x.shape[0] / batch_size)
         for epoch in range(epochs):
             epoch_loss = 0
@@ -33,12 +38,13 @@ class Model(object):
                 acc = accuracy(self.graph.eval(), mini_y)
                 epoch_loss = epoch_loss + loss
                 epoch_accuracy = epoch_accuracy + acc
-                print("Epoch: {}, loss: {}, accuracy: {}.".format(epoch, loss, acc))
-
+                if verbose >= 2:
+                    print("Epoch: {}, loss: {}, accuracy: {}.".format(epoch, loss, acc))
             epoch_loss /= n_batches
             epoch_accuracy /= n_batches
-            print("-" * 100)
-            print("Epoch {} finished, loss: {}, accuracy: {}.".format(epoch, epoch_loss, epoch_accuracy))
+            if verbose >= 1:
+                print("=" * 100)
+                print("==== Epoch {} finished, loss: {}, accuracy: {}.".format(epoch, epoch_loss, epoch_accuracy))
 
     def grad_check(self, x, y):
         self.optimizer.gradient_check(feed_dict={self.input: x, self.y_placeholder: y})

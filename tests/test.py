@@ -131,8 +131,8 @@ def accuracy(y_hat, y):
 
 def test_model():
     (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
-    m = 4096
-    x_train, y_train = x_train[:m, :], y_train[:m]
+    # m = 4096
+    # x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
     print("run_model, data's shape: ", x_train.shape, y_train.shape)
 
@@ -140,9 +140,9 @@ def test_model():
         ln.layers.Dense(10, input_dims=x_train.shape[1], activation=ln.nn.relu),
         ln.layers.Dense(10, activation=ln.nn.softmax)
     ])
-    model.compile(optimizer=ln.optimizers.GradientDescent(0.1), loss=ln.nn.cross_entropy)
+    model.compile(optimizer=ln.optimizers.Adam(0.003), loss=ln.nn.cross_entropy)
     # model.grad_check(x_train, y_train)
-    model.fit(x_train, y_train, epochs=5)
+    model.fit(x_train, y_train, epochs=10, verbose=1)
 
     # for i in range(10001):
     #     model.fit(x_train, y_train)
