@@ -13,7 +13,7 @@ def run_tests():
     test_relu()
     test_sigmoid()
     test_optimizer()
-    test_model()
+    # test_model()
 
 
 def test_add():
@@ -130,25 +130,27 @@ def accuracy(y_hat, y):
 
 
 def test_model():
-    (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
-    # m = 4096
-    # x_train, y_train = x_train[:m, :], y_train[:m]
+    (x_train, y_train), (x_val, y_val), _ = ln.datasets.mnist.load_data()
+    m = 4096
+    x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
-    print("run_model, data's shape: ", x_train.shape, y_train.shape)
+    y_val = ln.nn.one_hot(y_val, 10)
+    print("test_model, data's shape: ", x_train.shape, y_train.shape)
 
-    model = ln.models.Sequential([
-        ln.layers.Dense(10, input_dims=x_train.shape[1], activation=ln.nn.relu),
-        ln.layers.Dense(10, activation=ln.nn.softmax)
-    ])
+    # model = ln.models.Sequential([
+    #     ln.layers.Dense(128, input_dims=x_train.shape[1], activation=ln.nn.relu),
+    #     ln.layers.Dense(128, activation=ln.nn.relu),
+    #     ln.layers.Dense(10, activation=ln.nn.softmax)
+    # ])
+    model = ln.models.Sequential()
+    model.add(ln.layers.Dense(128, input_dims=x_train.shape[1], activation=ln.nn.relu))
+    model.add(ln.layers.Dense(128, activation=ln.nn.relu))
+    model.add(ln.layers.Dense(10, activation=ln.nn.softmax))
+
     model.compile(optimizer=ln.optimizers.Adam(0.003), loss=ln.nn.cross_entropy)
     # model.grad_check(x_train, y_train)
-    model.fit(x_train, y_train, epochs=10, verbose=1)
-
-    # for i in range(10001):
-    #     model.fit(x_train, y_train)
-    #     if (i % 100) == 0:
-    #         print("loss: {}, accuracy: .".format(model.cost.eval()))
-    #         # print("loss: {}, accuracy: {}.".format(model.cost.eval(), accuracy(model.graph.eval(), y_train)))
+    model.fit(x_train, y_train, batch_size=64, epochs=3, verbose=1)
+    model.evaluate(x_val, y_val)
 
 
 def run_model():
@@ -194,7 +196,8 @@ def run_model():
 
 
 def main():
-    run_tests()
+    # run_tests()
+    test_model()
     # run_model()
 
 
