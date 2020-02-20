@@ -1,5 +1,13 @@
 from learnet import type as ty
 from learnet import initializers
+from learnet import nn
+
+
+acts = {
+    "relu": nn.relu,
+    "sigmoid": nn.sigmoid,
+    "softmax": nn.softmax
+}
 
 
 class Layer(object):
@@ -9,8 +17,8 @@ class Layer(object):
 class Dense(Layer):
     def __init__(self, output_units, input_dims=None, activation=None):
         self.output_units = output_units
-        self.activation = activation
         self.input_dims = input_dims
+        self.activation = acts[activation] if isinstance(activation, str) else activation
 
     def get_graph(self, inp, input_dims):
         self.input_dims = input_dims
@@ -19,8 +27,5 @@ class Dense(Layer):
         b = ty.get_variable(shape=(1, self.output_units), initializer=initializers.zeros, name="b")
         _z = ty.matmul(inp, w)
         z = ty.add(_z, ty.broadcast(b, _z))
-        if self.activation:
-            a = self.activation(z)
-        else:
-            a = z
+        a = self.activation(z) if self.activation else z
         return a

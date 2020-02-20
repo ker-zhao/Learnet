@@ -3,6 +3,13 @@ import random
 import time
 
 from learnet import type as ty
+from learnet import optimizers
+
+
+opts = {
+    "GradientDescent": optimizers.GradientDescent,
+    "Adam": optimizers.Adam,
+}
 
 
 def accuracy(y_hat, y):
@@ -74,7 +81,7 @@ class Sequential(Model):
         self.layers.append(layer)
 
     def compile(self, optimizer, loss):
-        self.optimizer = optimizer
+        self.optimizer = opts[optimizer]() if isinstance(optimizer, str) else optimizers
         self.loss = loss
 
         self.graph = self.input
