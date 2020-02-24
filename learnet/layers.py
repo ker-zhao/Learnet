@@ -1,3 +1,5 @@
+import numpy as np
+
 from learnet import type as ty
 from learnet import initializers
 from learnet import nn
@@ -29,3 +31,12 @@ class Dense(Layer):
         z = ty.add(_z, ty.broadcast(b, _z))
         a = self.activation(z) if self.activation else z
         return a
+
+
+class Dropout(Layer):
+    def __init__(self, drop_rate):
+        self.rate = drop_rate
+
+    def get_graph(self, inp, input_dims):
+        # Todo: There needs a dropout operator.
+        np.random.rand()

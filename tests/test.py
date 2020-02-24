@@ -13,6 +13,7 @@ def run_tests():
     test_relu()
     test_sigmoid()
     test_optimizer()
+    test_tanh()
     # test_model()
 
 
@@ -109,6 +110,15 @@ def test_sigmoid():
         logging.error("test_relu error, v should be {}, got v={}".format(expect, result))
 
 
+def test_tanh():
+    x = ln.variable(np.array([0]))
+    y = ln.tanh(x)
+    expect = 1
+    result = y.gradients([x])[0][0]
+    if not np.array_equal(expect, result):
+        logging.error("test_tanh error, v should be {}, got v={}".format(expect, result))
+
+
 def test_optimizer():
     w = ln.variable(0)
     cons = ln.placeholder()
@@ -196,8 +206,8 @@ def run_model():
 
 
 def main():
-    # run_tests()
-    test_model()
+    run_tests()
+    # test_model()
     # run_model()
 
 

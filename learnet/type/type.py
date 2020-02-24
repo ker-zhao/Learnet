@@ -225,12 +225,28 @@ class SigmoidOp(object):
         return [np.exp(inputs[0].cache) / (np.exp(inputs[0].cache) + 1) ** 2 * grads]
 
 
-class Operator(object):
-    pass
-
-
 def sigmoid(x):
     return Node(SigmoidOp, [x])
+
+
+class TanhOp(object):
+    @staticmethod
+    def compute(inputs):
+        x = inputs[0].eval()
+        return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+
+    @staticmethod
+    def diff(inputs, grads):
+        x = inputs[0].cache
+        return [(1 - (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)) ** 2) * grads]
+
+
+def tanh(x):
+    return Node(TanhOp, [x])
+
+
+class Operator(object):
+    pass
 
 
 class Constant(object):
