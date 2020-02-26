@@ -141,29 +141,29 @@ def accuracy(y_hat, y):
 
 def test_model():
     (x_train, y_train), (x_val, y_val), _ = ln.datasets.mnist.load_data()
-    m = 4096
+    m = 1024
     x_train, y_train = x_train[:m, :], y_train[:m]
     y_train = ln.nn.one_hot(y_train, 10)
     y_val = ln.nn.one_hot(y_val, 10)
     print("test_model, data's shape: ", x_train.shape, y_train.shape)
 
-    # model = ln.models.Sequential([
-    #     ln.layers.Dense(128, input_dims=x_train.shape[1], activation=ln.nn.relu),
-    #     ln.layers.Dense(128, activation=ln.nn.relu),
-    #     ln.layers.Dense(10, activation=ln.nn.softmax)
-    # ])
     model = ln.models.Sequential()
-    model.add(ln.layers.Dense(128, input_dims=x_train.shape[1], activation="relu"))
+    # reg = None
+    reg = ln.nn.l2_regularizer(0.01)
+    model.add(ln.layers.Dense(128, input_dims=x_train.shape[1], activation="relu",
+                              kernel_regularizer=reg))
+    # model.add(ln.layers.Dropout(0.2))
     model.add(ln.layers.Dense(128, activation="relu"))
+    # model.add(ln.layers.Dropout(0.2))
     model.add(ln.layers.Dense(10, activation="softmax"))
 
-    model.compile(optimizer="Adam", loss=ln.nn.cross_entropy)
+    model.compile(optimizer=ln.optimizers.Adam(), loss=ln.nn.cross_entropy)
     # model.grad_check(x_train, y_train)
-    model.fit(x_train, y_train, batch_size=64, epochs=3, verbose=1)
+    model.fit(x_train, y_train, epochs=10, verbose=1, batch_size=8)
     model.evaluate(x_val, y_val)
 
 
-def run_model():
+def test():
     # np.seterr(all='raise')
     (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
     m = 64
@@ -197,18 +197,18 @@ def run_model():
 
     cost = ln.nn.cross_entropy(y_hat, y)
     opt = ln.optimizers.GradientDescent(0.01)
-    optimizer = opt.minimize(cost)
+    train_step = opt.minimize(cost)
     opt.gradient_check({x: x_train, y: y_train})
     for i in range(20001):
-        optimizer.eval(feed_dict={x: x_train, y: y_train})
+        train_step.eval(feed_dict={x: x_train, y: y_train})
         if (i % 100) == 0:
             print("loss: {}, accuracy: {}.".format(cost.eval(), accuracy(y_hat.eval(), y_train)))
 
 
 def main():
-    run_tests()
-    # test_model()
-    # run_model()
+    # run_tests()
+    test_model()
+    # test()
 
 
 if __name__ == "__main__":

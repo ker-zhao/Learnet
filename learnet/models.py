@@ -7,6 +7,7 @@ from learnet import optimizers
 
 
 opts = {
+    "GD": optimizers.GradientDescent,
     "GradientDescent": optimizers.GradientDescent,
     "Adam": optimizers.Adam,
 }
@@ -81,14 +82,21 @@ class Sequential(Model):
         self.layers.append(layer)
 
     def compile(self, optimizer, loss):
-        self.optimizer = opts[optimizer]() if isinstance(optimizer, str) else optimizers
+        self.optimizer = opts[optimizer]() if isinstance(optimizer, str) else optimizer
         self.loss = loss
+        reg_cost = None
 
         self.graph = self.input
         prev_output_dims = self.layers[0].input_dims
         for layer in self.layers:
             self.graph = layer.get_graph(self.graph, prev_output_dims)
             prev_output_dims = layer.output_units
-
+            if layer.kernel_regularizer:
+                if reg_cost:
+                    reg_cost = ty.add(reg_cost, layer.kernel_regularizer(layer.w, self.graph))
+                else:
+                    reg_cost = layer.kernel_regularizer(layer.w, self.graph)
         self.cost = self.loss(self.graph, self.y_placeholder)
+        if reg_cost:
+            self.cost = ty.add(self.cost, reg_cost)
         self.minimizer = self.optimizer.minimize(self.cost)

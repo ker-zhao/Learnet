@@ -245,6 +245,44 @@ def tanh(x):
     return Node(TanhOp, [x])
 
 
+class DropoutOp(object):
+    def __init__(self, rate):
+        self.rate = rate
+        self.d = None
+
+    def compute(self, inputs):
+        x = inputs[0].eval()
+        self.d = np.random.rand(x.shape[0], x.shape[1])
+        self.d = self.d > self.rate
+        return np.multiply(x, self.d)
+
+    def diff(self, _, grads):
+        return [grads * self.d / (1 - self.rate)]
+
+
+def dropout(x, rate=None):
+    return Node(DropoutOp(rate), [x])
+
+
+class L2RegularizerOp(object):
+    def __init__(self, lambd):
+        self.lambd = lambd
+
+    def compute(self, inputs):
+        w = inputs[0].eval()
+        x = inputs[1].eval()
+        return np.sum(np.square(w)) * (self.lambd / (2 * x.shape[0]))
+
+    def diff(self, inputs, _):
+        w = inputs[0].cache
+        x = inputs[1].cache
+        return [w / x.shape[0] * self.lambd, 0]
+
+
+def l2_regularizer(w, x, lambd=0.01):
+    return Node(L2RegularizerOp(lambd), [w, x])
+
+
 class Operator(object):
     pass
 

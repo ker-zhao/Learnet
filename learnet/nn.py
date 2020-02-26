@@ -28,3 +28,9 @@ def one_hot(y, n):
     y_one_hot = np.zeros((y.shape[0], n))
     y_one_hot[np.arange(y_one_hot.shape[0]), y] = 1
     return y_one_hot
+
+
+def l2_regularizer(lambd=0.01):
+    def inner(w, x):
+        return ty.l2_regularizer(w, x, lambd)
+    return inner
