@@ -19,14 +19,14 @@ class Node(object):
             for k, v in feed_dict.items():
                 k.value = v
             self.erase_cache()
-        if self.value is not None:
-            result = self.value
-        elif self.cache is not None:
-            result = self.cache
+        if self.cache is not None:
+            return self.cache
         else:
-            result = self.type.compute(self.inputs)
-        self.cache = result
-        return result
+            if self.value is not None:
+                self.cache = self.value
+            else:
+                self.cache = self.type.compute(self.inputs)
+            return self.cache
 
     def diff(self, grad, grads_map):
         if self.inputs:

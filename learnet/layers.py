@@ -1,5 +1,3 @@
-import numpy as np
-
 from learnet import type as ty
 from learnet import initializers
 from learnet import nn
