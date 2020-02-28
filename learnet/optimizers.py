@@ -9,7 +9,7 @@ class Optimizer(object):
 
     def minimize(self, cost):
         self.cost = cost
-        return ty.optimizer(self)
+        return ty.optimizer(self, self.cost)
 
     def gradient_check(self, feed_dict, epsilon=1e-7):
         nodes = self.cost.get_variable_nodes()
@@ -43,6 +43,7 @@ class GradientDescent(Optimizer):
         grads = self.cost.gradients(nodes)
         for i, node in enumerate(nodes):
             node.value -= grads[i] * self.learning_rate
+        return self.cost.cache
 
 
 class Adam(Optimizer):
@@ -65,7 +66,7 @@ class Adam(Optimizer):
             self.s.append(np.zeros_like(node.value))
             self.v_correct.append(np.zeros_like(node.value))
             self.s_correct.append(np.zeros_like(node.value))
-        return ty.optimizer(self)
+        return ty.optimizer(self, self.cost)
 
     def step(self):
         nodes = self.cost.get_variable_nodes()
@@ -78,3 +79,4 @@ class Adam(Optimizer):
             self.s_correct[i] = self.s[i] / (1 - (self.beta2 ** self.t))
             grad = self.v_correct[i] / (self.s_correct[i] ** 0.5 + self.epsilon)
             node.value -= grad * self.learning_rate
+        return self.cost.cache

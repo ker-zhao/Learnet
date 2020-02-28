@@ -4,7 +4,7 @@ import numpy as np
 
 def softmax(logits):
     exp_logits = ty.exp(logits)
-    return ty.div(exp_logits, ty.broadcast(ty.reduce_sum(ty.exp(logits), 1), exp_logits))
+    return ty.div(exp_logits, ty.broadcast(ty.reduce_sum(exp_logits, 1), exp_logits))
 
 
 def cross_entropy(y_hat, y):

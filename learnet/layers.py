@@ -41,9 +41,8 @@ class Dense(Layer):
 
 class Dropout(Layer):
     def __init__(self, drop_rate, input_dims=None):
-        super().__init__(input_dims)
+        super().__init__(output_units=None, input_dims=input_dims)
         self.rate = drop_rate
-        self.output_units = None
 
     def get_graph(self, inp, input_dims):
         self.output_units = input_dims

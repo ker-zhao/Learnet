@@ -52,10 +52,8 @@ class Model(object):
             for nb in range(n_batches):
                 mini_x = x[batch_size * nb:batch_size * (nb + 1), :]
                 mini_y = y[batch_size * nb:batch_size * (nb + 1), :]
-                self.minimizer.eval(feed_dict={self.input: mini_x, self.y_placeholder: mini_y})
-
-                loss = self.cost.eval()[0, 0]
-                acc = accuracy(self.graph.eval(), mini_y)
+                loss = self.minimizer.eval(feed_dict={self.input: mini_x, self.y_placeholder: mini_y})[0, 0]
+                acc = accuracy(self.graph.cache, mini_y)
                 epoch_loss = epoch_loss + loss
                 epoch_accuracy = epoch_accuracy + acc
                 if verbose >= 2:

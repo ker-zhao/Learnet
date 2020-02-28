@@ -8,12 +8,21 @@ class Node(object):
         self.value = value
         self.cache = None
 
+    def erase_cache(self):
+        self.cache = None
+        if self.inputs:
+            for node in self.inputs:
+                node.erase_cache()
+
     def eval(self, feed_dict=None):
         if feed_dict is not None:
             for k, v in feed_dict.items():
                 k.value = v
+            self.erase_cache()
         if self.value is not None:
             result = self.value
+        elif self.cache is not None:
+            result = self.cache
         else:
             result = self.type.compute(self.inputs)
         self.cache = result
@@ -254,13 +263,14 @@ class DropoutOp(object):
         x = inputs[0].eval()
         self.d = np.random.rand(x.shape[0], x.shape[1])
         self.d = self.d > self.rate
-        return np.multiply(x, self.d)
+        dropped = np.multiply(x, self.d)
+        return dropped / (1. - self.rate)
 
     def diff(self, _, grads):
-        return [grads * self.d / (1 - self.rate)]
+        return [np.multiply(grads, self.d) / (1. - self.rate)]
 
 
-def dropout(x, rate=None):
+def dropout(x, rate):
     return Node(DropoutOp(rate), [x])
 
 
@@ -329,11 +339,11 @@ class Optimizer(object):
         self.opt = opt
 
     def compute(self, _):
-        self.opt.step()
+        return self.opt.step()
 
 
-def optimizer(opt):
-    return Node(Optimizer(opt))
+def optimizer(opt, cost):
+    return Node(Optimizer(opt), [cost])
 
 
 class BroadcastOp(object):
