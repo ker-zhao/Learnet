@@ -36,6 +36,11 @@ class Model(object):
         y_hat = self.graph.cache
         acc = accuracy(y_hat, y)
         print("Loss: {}, accuracy: {}.".format(loss, acc))
+        return [loss, acc]
+
+    def predict(self, x):
+        y_hat = self.graph.eval(feed_dict={self.input: x})
+        return y_hat
 
     def fit(self, x, y, batch_size=32, epochs=1, shuffle=True, verbose=2):
         print("Train on {} samples".format(x.shape[0]))
