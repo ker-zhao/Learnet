@@ -2,7 +2,7 @@ import numpy as np
 import random
 import time
 
-from learnet import core as ty
+from learnet import core
 from learnet import optimizers
 
 
@@ -27,8 +27,8 @@ class Model(object):
         self.loss = None
         self.graph = None
         self.cost = None
-        self.input = ty.placeholder()
-        self.y_placeholder = ty.placeholder()
+        self.input = core.placeholder()
+        self.y_placeholder = core.placeholder()
 
     def evaluate(self, x, y):
         print("Evaluate on {} samples".format(x.shape[0]))
@@ -96,10 +96,10 @@ class Sequential(Model):
             prev_output_dims = layer.output_units
             if layer.kernel_regularizer:
                 if reg_cost:
-                    reg_cost = ty.add(reg_cost, layer.kernel_regularizer(layer.w, self.graph))
+                    reg_cost = core.add(reg_cost, layer.kernel_regularizer(layer.w, self.graph))
                 else:
                     reg_cost = layer.kernel_regularizer(layer.w, self.graph)
         self.cost = self.loss(self.graph, self.y_placeholder)
         if reg_cost:
-            self.cost = ty.add(self.cost, reg_cost)
+            self.cost = core.add(self.cost, reg_cost)
         self.minimizer = self.optimizer.minimize(self.cost)

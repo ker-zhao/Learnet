@@ -1,4 +1,4 @@
-from learnet import core as ty
+from learnet import core
 from learnet import initializers
 from learnet import nn
 
@@ -29,10 +29,10 @@ class Dense(Layer):
 
     def get_graph(self, inp, input_dims):
         self.input_dims = input_dims
-        self.w = ty.get_variable(shape=(self.input_dims, self.output_units), initializer=initializers.normal, name="w")
-        self.b = ty.get_variable(shape=(1, self.output_units), initializer=initializers.zeros, name="b")
-        _z = ty.matmul(inp, self.w)
-        z = ty.add(_z, ty.broadcast(self.b, _z))
+        self.w = core.get_variable(shape=(self.input_dims, self.output_units), initializer=initializers.normal, name="w")
+        self.b = core.get_variable(shape=(1, self.output_units), initializer=initializers.zeros, name="b")
+        _z = core.matmul(inp, self.w)
+        z = core.add(_z, core.broadcast(self.b, _z))
         a = self.activation(z) if self.activation else z
         return a
 
@@ -44,4 +44,4 @@ class Dropout(Layer):
 
     def get_graph(self, inp, input_dims):
         self.output_units = input_dims
-        return ty.dropout(inp, self.rate)
+        return core.dropout(inp, self.rate)

@@ -1,26 +1,26 @@
-from learnet import core as ty
+from learnet import core
 import numpy as np
 
 
 def softmax(logits):
-    exp_logits = ty.exp(logits)
-    return ty.div(exp_logits, ty.broadcast(ty.reduce_sum(exp_logits, 1), exp_logits))
+    exp_logits = core.exp(logits)
+    return core.div(exp_logits, core.broadcast(core.reduce_sum(exp_logits, 1), exp_logits))
 
 
 def cross_entropy(y_hat, y):
-    x = ty.log(y_hat)
-    x = ty.multiply(x, y)
-    costs = ty.reduce_sum(x, axis=1)
-    x = ty.mean(ty.negative(costs))
+    x = core.log(y_hat)
+    x = core.multiply(x, y)
+    costs = core.reduce_sum(x, axis=1)
+    x = core.mean(core.negative(costs))
     return x
 
 
 def relu(x):
-    return ty.relu(x)
+    return core.relu(x)
 
 
 def sigmoid(x):
-    return ty.sigmoid(x)
+    return core.sigmoid(x)
 
 
 def one_hot(y, n):
@@ -31,5 +31,5 @@ def one_hot(y, n):
 
 def l2_regularizer(lambd=0.01):
     def inner(w, x):
-        return ty.l2_regularizer(w, x, lambd)
+        return core.l2_regularizer(w, x, lambd)
     return inner

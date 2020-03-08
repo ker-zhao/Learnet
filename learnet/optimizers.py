@@ -1,4 +1,4 @@
-from learnet import core as ty
+from learnet import core
 import numpy as np
 
 
@@ -9,7 +9,7 @@ class Optimizer(object):
 
     def minimize(self, cost):
         self.cost = cost
-        return ty.optimizer(self, self.cost)
+        return core.optimizer(self, self.cost)
 
     def gradient_check(self, feed_dict, epsilon=1e-7):
         nodes = self.cost.get_variable_nodes()
@@ -66,7 +66,7 @@ class Adam(Optimizer):
             self.s.append(np.zeros_like(node.value))
             self.v_correct.append(np.zeros_like(node.value))
             self.s_correct.append(np.zeros_like(node.value))
-        return ty.optimizer(self, self.cost)
+        return core.optimizer(self, self.cost)
 
     def step(self):
         nodes = self.cost.get_variable_nodes()
