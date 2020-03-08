@@ -1,10 +1,10 @@
-import numpy as np
+from learnet import lib
 
 
 def normal(shape):
     scale = 0.1
-    return np.random.randn(*shape) * scale
+    return lib.np.random.randn(*shape) * scale
 
 
 def zeros(shape):
-    return np.zeros(shape)
+    return lib.np.zeros(shape)

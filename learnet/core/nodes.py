@@ -1,8 +1,4 @@
-import numpy as np
-from learnet.core import gpu
-
-
-GPU_ENABLED = False
+from learnet import lib
 
 
 class Node(object):
@@ -69,8 +65,6 @@ class Node(object):
 class AddOp(object):
     @staticmethod
     def compute(inputs):
-        if GPU_ENABLED:
-            return gpu.add(inputs[0].eval(), inputs[1].eval())
         return inputs[0].eval() + inputs[1].eval()
 
     @staticmethod
@@ -134,12 +128,12 @@ def div(x, y):
 class MatmulOp(object):
     @staticmethod
     def compute(inputs):
-        return np.dot(inputs[0].eval(), inputs[1].eval())
+        return lib.np.dot(inputs[0].eval(), inputs[1].eval())
 
     @staticmethod
     def diff(inputs, grads):
-        left = np.dot(grads, inputs[1].cache.T)
-        right = np.dot(inputs[0].cache.T, grads)
+        left = lib.np.dot(grads, inputs[1].cache.T)
+        right = lib.np.dot(inputs[0].cache.T, grads)
         return [left, right]
 
 
@@ -152,11 +146,11 @@ class ReduceSumOp(object):
         self.axis = axis
 
     def compute(self, inputs):
-        return np.sum(inputs[0].eval(), axis=self.axis, keepdims=True)
+        return lib.np.sum(inputs[0].eval(), axis=self.axis, keepdims=True)
 
     @staticmethod
     def diff(inputs, grads):
-        return [np.ones(inputs[0].cache.shape) * grads]
+        return [lib.np.ones(inputs[0].cache.shape) * grads]
 
 
 def reduce_sum(x, axis=None):
@@ -166,11 +160,11 @@ def reduce_sum(x, axis=None):
 class ExpOp(object):
     @staticmethod
     def compute(inputs):
-        return np.exp(inputs[0].eval())
+        return lib.np.exp(inputs[0].eval())
 
     @staticmethod
     def diff(inputs, grads):
-        return [np.exp(inputs[0].cache) * grads]
+        return [lib.np.exp(inputs[0].cache) * grads]
 
 
 def exp(x):
@@ -186,8 +180,8 @@ class LogOp(object):
     @staticmethod
     def compute(inputs):
         # inp = replace_zeroes(inputs[0].eval())
-        # return np.log(inp)
-        return np.log(inputs[0].eval())
+        # return lib.np.log(inp)
+        return lib.np.log(inputs[0].eval())
 
     @staticmethod
     def diff(inputs, grads):
@@ -203,12 +197,12 @@ class MeanOp(object):
         self.axis = axis
 
     def compute(self, inputs):
-        return np.mean(inputs[0].eval(), axis=self.axis, keepdims=True)
+        return lib.np.mean(inputs[0].eval(), axis=self.axis, keepdims=True)
 
     def diff(self, inputs, grads):
         m = inputs[0].cache.shape[self.axis] if self.axis is not None else \
             inputs[0].cache.shape[0] * inputs[0].cache.shape[1]
-        return [np.ones(inputs[0].cache.shape) * grads / m]
+        return [lib.np.ones(inputs[0].cache.shape) * grads / m]
 
 
 def mean(x, axis=None):
@@ -218,11 +212,11 @@ def mean(x, axis=None):
 class ReluOp(object):
     @staticmethod
     def compute(inputs):
-        return np.maximum(inputs[0].eval(), 0)
+        return lib.np.maximum(inputs[0].eval(), 0)
 
     @staticmethod
     def diff(inputs, grads):
-        return [np.sign(np.maximum(inputs[0].cache, 0)) * grads]
+        return [lib.np.sign(lib.np.maximum(inputs[0].cache, 0)) * grads]
 
 
 def relu(x):
@@ -233,11 +227,11 @@ def relu(x):
 class SigmoidOp(object):
     @staticmethod
     def compute(inputs):
-        return 1 / (1 + np.exp(-inputs[0].eval()))
+        return 1 / (1 + lib.np.exp(-inputs[0].eval()))
 
     @staticmethod
     def diff(inputs, grads):
-        return [np.exp(inputs[0].cache) / (np.exp(inputs[0].cache) + 1) ** 2 * grads]
+        return [lib.np.exp(inputs[0].cache) / (lib.np.exp(inputs[0].cache) + 1) ** 2 * grads]
 
 
 def sigmoid(x):
@@ -248,12 +242,12 @@ class TanhOp(object):
     @staticmethod
     def compute(inputs):
         x = inputs[0].eval()
-        return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+        return (lib.np.exp(x) - lib.np.exp(-x)) / (lib.np.exp(x) + lib.np.exp(-x))
 
     @staticmethod
     def diff(inputs, grads):
         x = inputs[0].cache
-        return [(1 - (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)) ** 2) * grads]
+        return [(1 - (lib.np.exp(x) - lib.np.exp(-x)) / (lib.np.exp(x) + lib.np.exp(-x)) ** 2) * grads]
 
 
 def tanh(x):
@@ -281,13 +275,13 @@ class DropoutOp(object):
 
     def compute(self, inputs):
         x = inputs[0].eval()
-        self.d = np.random.rand(x.shape[0], x.shape[1])
+        self.d = lib.np.random.rand(x.shape[0], x.shape[1])
         self.d = self.d > self.rate
-        dropped = np.multiply(x, self.d)
+        dropped = lib.np.multiply(x, self.d)
         return dropped / (1. - self.rate)
 
     def diff(self, _, grads):
-        return [np.multiply(grads, self.d) / (1. - self.rate)]
+        return [lib.np.multiply(grads, self.d) / (1. - self.rate)]
 
 
 def dropout(x, rate):
@@ -301,7 +295,7 @@ class L2RegularizerOp(object):
     def compute(self, inputs):
         w = inputs[0].eval()
         x = inputs[1].eval()
-        return np.sum(np.square(w)) * (self.lambd / (2 * x.shape[0]))
+        return lib.np.sum(lib.np.square(w)) * (self.lambd / (2 * x.shape[0]))
 
     def diff(self, inputs, _):
         w = inputs[0].cache
@@ -369,11 +363,11 @@ def optimizer(opt, cost):
 class BroadcastOp(object):
     @staticmethod
     def compute(inputs):
-        return np.broadcast_to(inputs[0].eval(), inputs[1].eval().shape)
+        return lib.np.broadcast_to(inputs[0].eval(), inputs[1].eval().shape)
 
     @staticmethod
     def diff(inputs, grads):
-        if isinstance(inputs[0].cache, np.ndarray):
+        if isinstance(inputs[0].cache, lib.np.ndarray):
             if inputs[0].cache.shape[0] == inputs[1].cache.shape[0]:
                 axis = 1
             elif inputs[0].cache.shape[1] == inputs[1].cache.shape[1]:
@@ -383,8 +377,8 @@ class BroadcastOp(object):
         else:
             axis = None
         # axis = 1 if inputs[0].cache.shape[0] == inputs[1].cache.shape[0] else 0
-        left = np.sum(grads, axis=axis, keepdims=True)
-        right = np.zeros(shape=inputs[1].cache.shape)
+        left = lib.np.sum(grads, axis=axis, keepdims=True)
+        right = lib.np.zeros(shape=inputs[1].cache.shape)
         return [left, right]
 
 

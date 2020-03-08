@@ -5,3 +5,4 @@ from learnet import optimizers
 from learnet import datasets
 from learnet import models
 from learnet import layers
+from learnet import lib

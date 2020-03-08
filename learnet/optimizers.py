@@ -1,5 +1,5 @@
 from learnet import core
-import numpy as np
+from learnet import lib
 
 
 class Optimizer(object):
@@ -17,10 +17,10 @@ class Optimizer(object):
         grads_approx = []
         error_counter = 0
         for ni, node in enumerate(nodes):
-            grads_approx.append(np.zeros_like(node.value))
+            grads_approx.append(lib.np.zeros_like(node.value))
             for i in range(node.value.shape[0]):
                 for ii in range(node.value.shape[1]):
-                    value_save = np.copy(node.value)
+                    value_save = lib.np.copy(node.value)
                     node.value[i, ii] = node.value[i, ii] + epsilon
                     cost_plus = self.cost.eval(feed_dict=feed_dict)
                     node.value[i, ii] = node.value[i, ii] - epsilon * 2
@@ -33,7 +33,7 @@ class Optimizer(object):
                         print("Error: gradient_check: grads: {}, grad_approx: {}, diff: {}".format(
                             grads[ni][i, ii], grad_approx, abs(grads_approx[ni][i, ii] - grads[ni][i, ii])))
                         error_counter += 1
-                    node.value = np.copy(value_save)
+                    node.value = lib.np.copy(value_save)
         print("Gradient checking pass. Errors: {}".format(error_counter))
 
 
@@ -62,10 +62,10 @@ class Adam(Optimizer):
         self.cost = cost
         nodes = self.cost.get_variable_nodes()
         for node in nodes:
-            self.v.append(np.zeros_like(node.value))
-            self.s.append(np.zeros_like(node.value))
-            self.v_correct.append(np.zeros_like(node.value))
-            self.s_correct.append(np.zeros_like(node.value))
+            self.v.append(lib.np.zeros_like(node.value))
+            self.s.append(lib.np.zeros_like(node.value))
+            self.v_correct.append(lib.np.zeros_like(node.value))
+            self.s_correct.append(lib.np.zeros_like(node.value))
         return core.optimizer(self, self.cost)
 
     def step(self):

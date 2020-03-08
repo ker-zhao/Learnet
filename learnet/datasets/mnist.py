@@ -1,6 +1,7 @@
 import gzip
 import pickle
 import os
+from learnet import lib
 
 
 def load_data():
@@ -12,4 +13,8 @@ def load_data():
         u.encoding = 'latin1'
         train, val, test = u.load()
     # train, val, test = [train[0].T, train[1].T], [val[0].T, val[1].T], [test[0].T, test[1].T]
+    if lib.GPU_ENABLED:
+        train = (lib.cp.asarray(train[0]), lib.cp.asarray(train[1]))
+        val = (lib.cp.asarray(val[0]), lib.cp.asarray(val[1]))
+        test = (lib.cp.asarray(test[0]), lib.cp.asarray(test[1]))
     return train, val, test

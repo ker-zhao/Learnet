@@ -1,9 +1,9 @@
-import numpy as np
 import random
 import time
 
 from learnet import core
 from learnet import optimizers
+from learnet import lib
 
 
 opts = {
@@ -14,9 +14,9 @@ opts = {
 
 
 def accuracy(y_hat, y):
-    y_hat = np.argmax(y_hat, axis=1)
-    y = np.argmax(y, axis=1)
-    correct = np.sum(np.equal(y_hat, y))
+    y_hat = lib.np.argmax(y_hat, axis=1)
+    y = lib.np.argmax(y, axis=1)
+    correct = lib.np.sum(lib.np.equal(y_hat, y))
     return correct / y.shape[0]
 
 
@@ -70,7 +70,8 @@ class Model(object):
             if verbose >= 1:
                 # print("=" * 100)
                 # print("==== Epoch {} finished, loss: {}, accuracy: {}.".format(epoch, epoch_loss, epoch_accuracy))
-                print("Time used: {},  loss: {:.6f}, accuracy: {:.4f}.".format(time_str, epoch_loss, epoch_accuracy))
+                print("Time used: {},  loss: {:.6f}, accuracy: {:.4f}.".format(
+                    time_str, float(epoch_loss), float(epoch_accuracy)))
 
     def grad_check(self, x, y):
         self.optimizer.gradient_check(feed_dict={self.input: x, self.y_placeholder: y})

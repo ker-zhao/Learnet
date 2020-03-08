@@ -1,6 +1,7 @@
 import logging
-import numpy as np
 import learnet as ln
+from learnet import lib
+
 
 
 def run_tests():
@@ -34,8 +35,8 @@ def test_basic_1():
 
 
 def test_basic_matrix_1():
-    x = ln.constant(np.ones([3, 2]) * 8)
-    y = ln.constant(np.ones([3, 2]) * 4)
+    x = ln.constant(lib.np.ones([3, 2]) * 8)
+    y = ln.constant(lib.np.ones([3, 2]) * 4)
     z = ln.multiply(ln.div(x, (ln.sub(ln.constant(8), y))), ln.constant(10))
     expect = 2.5
     result = z.gradients([x, y])[0][0, 0]
@@ -44,7 +45,7 @@ def test_basic_matrix_1():
 
 
 def test_mean():
-    x = ln.constant(np.array([[1, 2, 3, 4], [1, 2, 3, 4]]))
+    x = ln.constant(lib.np.array([[1, 2, 3, 4], [1, 2, 3, 4]]))
     z = ln.mean(x)
     expect = 0.125
     result = z.gradients([x])[0][0, 0]
@@ -53,10 +54,10 @@ def test_mean():
 
 
 def test_squared_error():
-    x = ln.constant(np.ones([3, 10]) * 0.5)
-    w1 = ln.constant(np.ones([2, 3]) * 4)
+    x = ln.constant(lib.np.ones([3, 10]) * 0.5)
+    w1 = ln.constant(lib.np.ones([2, 3]) * 4)
     z1 = ln.matmul(w1, x)
-    w2 = ln.constant(np.ones([1, 2]) * 4)
+    w2 = ln.constant(lib.np.ones([1, 2]) * 4)
     z2 = ln.matmul(w2, z1)
     y = ln.constant(24)
     cost = ln.div(ln.reduce_sum(ln.multiply(ln.multiply(ln.sub(z2, y), ln.sub(z2, y)), ln.constant(0.5))),
@@ -69,12 +70,12 @@ def test_squared_error():
 
 def test_softmax():
     epsilon = 1e-7
-    logits = ln.variable(np.array([[1., 8.], [3., 8.]]))
-    y = ln.constant(np.array([[0., 1.], [0., 1.]]))
+    logits = ln.variable(lib.np.array([[1., 8.], [3., 8.]]))
+    y = ln.constant(lib.np.array([[0., 1.], [0., 1.]]))
     predict = ln.nn.softmax(logits)
     cost = ln.nn.cross_entropy(predict, y)
-    logits_pos = ln.constant(np.array([[1, 4], [3, 8 + epsilon]]))
-    logits_neg = ln.constant(np.array([[1, 4], [3, 8 - epsilon]]))
+    logits_pos = ln.constant(lib.np.array([[1, 4], [3, 8 + epsilon]]))
+    logits_neg = ln.constant(lib.np.array([[1, 4], [3, 8 - epsilon]]))
     softmax_pos = ln.nn.softmax(logits_pos)
     softmax_neg = ln.nn.softmax(logits_neg)
     result_pos = ln.nn.cross_entropy(softmax_pos, y)
@@ -93,29 +94,29 @@ def test_softmax():
 
 
 def test_relu():
-    x = ln.constant(np.array([[1, 2, 3, -4, 0], [-1, -2, -3, 4, 0]]))
+    x = ln.constant(lib.np.array([[1, 2, 3, -4, 0], [-1, -2, -3, 4, 0]]))
     y = ln.relu(x)
-    expect = np.array([[1., 1., 1., 0., 0.], [0., 0., 0., 1., 0.]])
+    expect = lib.np.array([[1., 1., 1., 0., 0.], [0., 0., 0., 1., 0.]])
     result = y.gradients([x])[0]
-    if not np.array_equal(expect, result):
+    if not lib.np.array_equal(expect, result):
         logging.error("test_relu error, v should be {}, got v={}".format(expect, result))
 
 
 def test_sigmoid():
-    x = ln.constant(np.array([1, 0, -1]))
+    x = ln.constant(lib.np.array([1, 0, -1]))
     y = ln.sigmoid(x)
     expect = 0.25
     result = y.gradients([x])[0][1]
-    if not np.array_equal(expect, result):
+    if not lib.np.array_equal(expect, result):
         logging.error("test_relu error, v should be {}, got v={}".format(expect, result))
 
 
 def test_tanh():
-    x = ln.variable(np.array([0]))
+    x = ln.variable(lib.np.array([0]))
     y = ln.tanh(x)
     expect = 1
     result = y.gradients([x])[0][0]
-    if not np.array_equal(expect, result):
+    if not lib.np.array_equal(expect, result):
         logging.error("test_tanh error, v should be {}, got v={}".format(expect, result))
 
 
@@ -133,9 +134,9 @@ def test_optimizer():
 
 
 def accuracy(y_hat, y):
-    y_hat = np.argmax(y_hat, axis=1)
-    y = np.argmax(y, axis=1)
-    correct = np.sum(np.equal(y_hat, y))
+    y_hat = lib.np.argmax(y_hat, axis=1)
+    y = lib.np.argmax(y, axis=1)
+    correct = lib.np.sum(lib.np.equal(y_hat, y))
     return correct / y.shape[0] * 100.00
 
 
@@ -159,12 +160,12 @@ def test_model():
 
     model.compile(optimizer=ln.optimizers.Adam(), loss=ln.nn.cross_entropy)
     # model.grad_check(x_train, y_train)
-    model.fit(x_train, y_train, epochs=10, verbose=1, batch_size=32)
+    model.fit(x_train, y_train, epochs=10, verbose=1, batch_size=512)
     model.evaluate(x_val, y_val)
 
 
 def test():
-    # np.seterr(all='raise')
+    # lib.np.seterr(all='raise')
     (x_train, y_train), _, _ = ln.datasets.mnist.load_data()
     m = 64
     x_train, y_train = x_train[:m, :], y_train[:m]
@@ -206,7 +207,8 @@ def test():
 
 
 def main():
-    # np.seterr(all='raise')
+    lib.np.seterr(all='raise')
+    ln.lib.enable_gpu(True)
     # run_tests()
     test_model()
     # test()

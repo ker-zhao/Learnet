@@ -1,5 +1,5 @@
 from learnet import core
-import numpy as np
+from learnet import lib
 
 
 def softmax(logits):
@@ -24,8 +24,8 @@ def sigmoid(x):
 
 
 def one_hot(y, n):
-    y_one_hot = np.zeros((y.shape[0], n))
-    y_one_hot[np.arange(y_one_hot.shape[0]), y] = 1
+    y_one_hot = lib.np.zeros((y.shape[0], n))
+    y_one_hot[lib.np.arange(y_one_hot.shape[0]), y] = 1
     return y_one_hot
 
 
