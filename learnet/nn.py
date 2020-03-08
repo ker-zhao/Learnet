@@ -11,8 +11,7 @@ def cross_entropy(y_hat, y):
     x = ty.log(y_hat)
     x = ty.multiply(x, y)
     costs = ty.reduce_sum(x, axis=1)
-    x = ty.sub(ty.broadcast(ty.constant(0), costs), costs)
-    x = ty.mean(x)
+    x = ty.mean(ty.negative(costs))
     return x
 
 

@@ -206,7 +206,7 @@ def test():
 
 
 def main():
-    np.seterr(all='raise')
+    # np.seterr(all='raise')
     # run_tests()
     test_model()
     # test()

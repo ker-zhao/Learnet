@@ -254,6 +254,20 @@ def tanh(x):
     return Node(TanhOp, [x])
 
 
+class NegativeOp(object):
+    @staticmethod
+    def compute(inputs):
+        return -inputs[0].eval()
+
+    @staticmethod
+    def diff(_, grads):
+        return [-grads]
+
+
+def negative(x):
+    return Node(NegativeOp, [x])
+
+
 class DropoutOp(object):
     def __init__(self, rate):
         self.rate = rate
