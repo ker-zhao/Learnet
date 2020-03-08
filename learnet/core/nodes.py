@@ -1,4 +1,8 @@
 import numpy as np
+from learnet.core import gpu
+
+
+GPU_ENABLED = False
 
 
 class Node(object):
@@ -65,6 +69,8 @@ class Node(object):
 class AddOp(object):
     @staticmethod
     def compute(inputs):
+        if GPU_ENABLED:
+            return gpu.add(inputs[0].eval(), inputs[1].eval())
         return inputs[0].eval() + inputs[1].eval()
 
     @staticmethod
