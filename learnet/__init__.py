@@ -1,4 +1,4 @@
-from .type import *
+from .core import *
 from learnet import nn
 from learnet import initializers
 from learnet import optimizers

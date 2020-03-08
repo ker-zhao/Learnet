@@ -1,4 +1,4 @@
-from learnet import type as ty
+from learnet import core as ty
 import numpy as np
 
 

@@ -2,7 +2,7 @@ import numpy as np
 import random
 import time
 
-from learnet import type as ty
+from learnet import core as ty
 from learnet import optimizers
 
 
