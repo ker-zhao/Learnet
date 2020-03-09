@@ -4,12 +4,18 @@ import time
 from learnet import core
 from learnet import optimizers
 from learnet import lib
+from learnet import nn
 
 
 opts = {
     "GD": optimizers.GradientDescent,
     "GradientDescent": optimizers.GradientDescent,
     "Adam": optimizers.Adam,
+    "adam": optimizers.Adam,
+}
+
+losses = {
+    "cross_entropy": nn.cross_entropy,
 }
 
 
@@ -87,7 +93,7 @@ class Sequential(Model):
 
     def compile(self, optimizer, loss):
         self.optimizer = opts[optimizer]() if isinstance(optimizer, str) else optimizer
-        self.loss = loss
+        self.loss = losses[loss] if isinstance(loss, str) else loss
         reg_cost = None
 
         self.graph = self.input

@@ -2,6 +2,7 @@ import gzip
 import pickle
 import os
 from learnet import lib
+from learnet import nn
 
 
 def load_data():
@@ -17,4 +18,7 @@ def load_data():
         train = (lib.cp.asarray(train[0]), lib.cp.asarray(train[1]))
         val = (lib.cp.asarray(val[0]), lib.cp.asarray(val[1]))
         test = (lib.cp.asarray(test[0]), lib.cp.asarray(test[1]))
+    train = (train[0], nn.one_hot(train[1], 10))
+    val = (val[0], nn.one_hot(val[1], 10))
+    test = (test[0], nn.one_hot(test[1], 10))
     return train, val, test

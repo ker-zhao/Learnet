@@ -3,7 +3,6 @@ import learnet as ln
 from learnet import lib
 
 
-
 def run_tests():
     test_add()
     test_basic_1()
@@ -144,8 +143,6 @@ def test_model():
     (x_train, y_train), (x_val, y_val), _ = ln.datasets.mnist.load_data()
     # m = 4096
     # x_train, y_train = x_train[:m, :], y_train[:m]
-    y_train = ln.nn.one_hot(y_train, 10)
-    y_val = ln.nn.one_hot(y_val, 10)
     print("test_model, data's shape: ", x_train.shape, y_train.shape)
 
     model = ln.models.Sequential()
@@ -208,7 +205,7 @@ def test():
 
 def main():
     lib.np.seterr(all='raise')
-    ln.lib.enable_gpu(True)
+    # ln.lib.enable_gpu(True)
     # run_tests()
     test_model()
     # test()
