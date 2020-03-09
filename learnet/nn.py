@@ -1,5 +1,5 @@
-from learnet import core
-from learnet import lib
+from . import core
+from .core import lib
 
 
 def softmax(logits):

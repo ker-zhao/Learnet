@@ -1,6 +1,6 @@
-from learnet import core
-from learnet import initializers
-from learnet import nn
+from . import core
+from . import initializers
+from . import nn
 
 
 acts = {

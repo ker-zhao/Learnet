@@ -1,3 +1,5 @@
+import sys
+sys.path.extend(['.', '..'])
 import learnet as ln
 
 

@@ -1,1 +1,1 @@
-from learnet.datasets import mnist
+from . import mnist

@@ -1,4 +1,4 @@
-from learnet import lib
+from .core import lib
 
 
 def normal(shape):

@@ -1,10 +1,10 @@
 import random
 import time
 
-from learnet import core
-from learnet import optimizers
-from learnet import lib
-from learnet import nn
+from . import core
+from . import optimizers
+from . import nn
+from .core import lib
 
 
 opts = {

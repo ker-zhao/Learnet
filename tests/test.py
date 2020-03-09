@@ -1,6 +1,8 @@
 import logging
+import sys
+sys.path.extend(['.', '..'])
 import learnet as ln
-from learnet import lib
+from learnet.core import lib
 
 
 def run_tests():

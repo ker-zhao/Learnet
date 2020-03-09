@@ -1,7 +1,9 @@
 import gzip
 import pickle
 import os
-from learnet import lib
+import sys
+sys.path.extend(['.', '..'])
+from learnet.core import lib
 from learnet import nn
 
 

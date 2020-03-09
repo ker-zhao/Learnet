@@ -1,4 +1,4 @@
-from learnet import lib
+from . import lib
 
 
 class Node(object):
