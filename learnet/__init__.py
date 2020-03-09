@@ -1,3 +1,5 @@
+__author__ = "Ker"
+
 from .core import *
 from . import nn
 from . import initializers

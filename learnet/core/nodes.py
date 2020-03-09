@@ -1,3 +1,5 @@
+__author__ = "Ker"
+
 from . import lib
 
 

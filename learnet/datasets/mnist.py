@@ -1,10 +1,8 @@
 import gzip
 import pickle
 import os
-import sys
-sys.path.extend(['.', '..'])
-from learnet.core import lib
-from learnet import nn
+from .. import nn
+from ..core import lib
 
 
 def load_data():
